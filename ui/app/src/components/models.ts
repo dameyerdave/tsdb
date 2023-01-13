@@ -1,8 +1,11 @@
-export interface Todo {
-  id: number;
-  content: string;
+export interface ChartConfig {
+    name: string
+    config: object
 }
 
-export interface Meta {
-  totalCount: number;
+export interface Chart {
+    name: string
+    sensors: Array<string>
+    switches: Array<string>
+    config: ChartConfig
 }

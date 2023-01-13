@@ -1,0 +1,69 @@
+{
+  "chart": {
+    "type": "line",
+    "zoom": {
+      "type": "x",
+      "enabled": true,
+      "autoScaleYaxis": true
+    },
+    "animations": {
+      "enabled": false
+    },
+    "dropShadow": {
+      "enabled": true,
+      "color": "#000",
+      "top": 18,
+      "left": 7,
+      "blur": 10,
+      "opacity": 0.2
+    },
+    "stacked": false
+  },
+  "dataLabels": {
+    "enabled": false
+  },
+  "markers": {
+    "size": [0]
+  },
+  "stroke": {
+    "curve": ["smooth"]
+  },
+  "title": {
+    "text": "Sensor",
+    "align": "left"
+  },
+  "grid": {
+    "row": {
+      "colors": ["#f3f3f3", "transparent"],
+      "opacity": 0.5
+    }
+  },
+  "tooltip": {
+    "x": {
+      "format": "yyyy-MM-dd HH:mm:ss"
+    }
+  },
+  "noData": {
+    "text": "message.loading"
+  },
+  "legend": {
+    "position": "top",
+    "horizontalAlign": "center",
+    "floating": true,
+    "offsetY": -20,
+    "offsetX": -5
+  },
+  "xaxis": {
+    "type": "datetime"
+  },
+  "yaxis": [
+    {
+      "title": {
+        "text": "Temperature",
+        "style": {
+          "color": "#00E396"
+        }
+      }
+    }
+  ]
+}

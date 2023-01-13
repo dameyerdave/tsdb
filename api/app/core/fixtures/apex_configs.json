@@ -1,0 +1,97 @@
+[
+  {
+    "model": "core.apexconfig",
+    "pk": 1,
+    "fields": {
+      "name": "base",
+      "inherit": null,
+      "own_config": {
+        "grid": {
+          "row": {
+            "colors": ["#f3f3f3", "transparent"],
+            "opacity": 0.5
+          }
+        },
+        "chart": {
+          "type": "line",
+          "zoom": {
+            "enabled": true,
+            "autoScaleYaxis": true
+          },
+          "animations": {
+            "enabled": false
+          },
+          "dropShadow": {
+            "top": 18,
+            "blur": 10,
+            "left": 7,
+            "color": "#000",
+            "enabled": false,
+            "opacity": 0.2
+          }
+        },
+        "title": {
+          "align": "left"
+        },
+        "xaxis": {
+          "type": "datetime"
+        },
+        "yaxis": [
+          {
+            "title": {
+              "style": {
+                "color": "#00E396"
+              }
+            }
+          }
+        ],
+        "legend": {
+          "offsetX": -5,
+          "offsetY": -20,
+          "floating": true,
+          "position": "top",
+          "horizontalAlign": "center"
+        },
+        "noData": {
+          "text": "message.loading"
+        },
+        "stroke": {
+          "curve": ["smooth"]
+        },
+        "markers": {
+          "size": [0]
+        },
+        "tooltip": {
+          "x": {
+            "format": "yyyy-MM-dd HH:mm:ss"
+          }
+        },
+        "dataLabels": {
+          "enabled": false
+        }
+      },
+      "mixins": []
+    }
+  },
+  {
+    "model": "core.apexconfig",
+    "pk": 2,
+    "fields": {
+      "name": "default",
+      "inherit": 1,
+      "own_config": {
+        "title": {
+          "text": "Sensor"
+        },
+        "yaxis": [
+          {
+            "title": {
+              "text": "Temperature"
+            }
+          }
+        ]
+      },
+      "mixins": []
+    }
+  }
+]

@@ -11,7 +11,7 @@ class Command(BaseCommand):
         parser.add_argument('action', type=str, help='The action to execute')
 
     def init(self):
-        pass
+        call_command('loaddata', 'apex_configs.json')
 
     def clean(self):
         call_command('flush')

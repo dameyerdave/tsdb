@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import SensorReading, SwitchState
-from .serializers import SensorReadingSerializer, SwitchStateSerializer
+from .models import SensorReading, SwitchState, ApexConfig, ApexChart
+from .serializers import SensorReadingSerializer, SwitchStateSerializer, ApexConfigSerializer, ApexChartSerializer
 from .helpers import milliseconds, dictfetchall, value_unit, quote
 from datetime import timedelta as td
 from django.utils.timezone import now
@@ -20,6 +20,7 @@ class SensorReadingViewSet(viewsets.ModelViewSet):
         sensor = request.GET.get('sensor')
         last_value, last_unit = value_unit(request.GET.get('last'), settings.APEX_DEFAULT_LAST)
         resolution_value, resolution_unit = value_unit(request.GET.get('resolution'), settings.APEX_DEFAULT_RESOLUTION)
+        digits = request.GET.get('digits', settings.APEX_DEFAULT_DIGITS)
         sensor_filter = ''
         if sensor:
             sensor_filter = f"AND s.name IN ({','.join([quote(s) for s in sensor.split(',')])})"
@@ -30,13 +31,13 @@ class SensorReadingViewSet(viewsets.ModelViewSet):
                 SELECT 
                     s.name AS sensor, 
                     time_bucket('{} {}', sr.time) AS timestamp, 
-                    avg(sr.value) AS avg
+                    round(avg(sr.value)::numeric, {}) AS avg
                 FROM core_sensorreading as sr
                 INNER JOIN core_sensor s on sr.sensor_id = s.id 
                 WHERE sr.time > '{}' {}
                 GROUP BY s.name, timestamp
                 ORDER BY timestamp
-            '''.format(resolution_value, resolution_unit, now() - td(**{last_unit: last_value}), sensor_filter))
+            '''.format(resolution_value, resolution_unit, digits, now() - td(**{last_unit: last_value}), sensor_filter))
             for dp in dictfetchall(cursor):
                 if dp.sensor not in ret:
                     ret[dp.sensor] = {'name': dp.sensor, 'data': []}
@@ -87,3 +88,15 @@ class SwitchStateViewSet(viewsets.ModelViewSet):
                     ret[key]['x2'] = milliseconds(now())
 
         return Response([r for r in ret.values()], status.HTTP_200_OK)
+
+
+class ApexConfigViewSet(viewsets.ModelViewSet):
+    queryset = ApexConfig.objects.all()
+    serializer_class = ApexConfigSerializer
+    filterset_fields = ('name',)
+
+
+class ApexChartViewSet(viewsets.ModelViewSet):
+    queryset = ApexChart.objects.all()
+    serializer_class = ApexChartSerializer
+    filterset_fields = ('name',)
