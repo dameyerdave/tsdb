@@ -300,4 +300,4 @@ media/
 backups/
 
 *.ipynb
-*.csv
+*.csv..bfg-report
