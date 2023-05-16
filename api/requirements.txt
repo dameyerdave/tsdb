@@ -4,6 +4,7 @@ django-cors-headers==4.0.0
 django-filter==23.2
 django-jsoneditor-widget==1.3.2
 django-light==0.1.0.post3
+django-colorfield==0.8.0
 djangorestframework==3.14.0
 drf-schema-adapter==3.0.6
 # git+https://github.com/dameyerdave/drf-schema-adapter@filter_to_filterset#egg=drf-schema-adapter

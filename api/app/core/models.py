@@ -2,17 +2,18 @@ from django.db import models
 from django.utils import timezone
 from datetime import timedelta as td
 from django.contrib.postgres.fields import ArrayField
+from colorfield.fields import ColorField
 from deepmerge import always_merger
 import json
 
 
 def get_apex_options_schema():
-    with open('core/schemas/apex_options.json', 'r') as schema_file:
+    with open("core/schemas/apex_options.json", "r") as schema_file:
         return json.load(schema_file)
 
 
 def get_default_apex_options():
-    with open('core/schemas/apex_options_default.json', 'r') as defaults_file:
+    with open("core/schemas/apex_options_default.json", "r") as defaults_file:
         return json.load(defaults_file)
 
 
@@ -49,11 +50,11 @@ class SensorReading(TimescaleModel):
         return f"[{self.time}] {self.sensor.name}: {self.value}"
 
     class Meta:
-        unique_together = ('time', 'sensor')
+        unique_together = ("time", "sensor")
         index_together = [
-            ('time', 'sensor'),
+            ("time", "sensor"),
         ]
-        ordering = ('time',)
+        ordering = ("time",)
 
 
 class Switch(models.Model):
@@ -71,18 +72,28 @@ class SwitchState(TimescaleModel):
         cls.objects.create(switch=_switch, on=on)
 
     class Meta:
-        unique_together = ('time', 'switch')
+        unique_together = ("time", "switch")
         index_together = [
-            ('time', 'switch'),
+            ("time", "switch"),
         ]
-        ordering = ('time',)
+        ordering = ("time",)
 
 
 class ApexConfig(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    inherit = models.ForeignKey('ApexConfig', on_delete=models.RESTRICT, null=True, blank=True, related_name='inheritors')
-    mixins = models.ManyToManyField('ApexConfig', related_name='mixin_sources', blank=True)
-    own_config = models.JSONField(default=get_default_apex_options, null=True, blank=True)
+    inherit = models.ForeignKey(
+        "ApexConfig",
+        on_delete=models.RESTRICT,
+        null=True,
+        blank=True,
+        related_name="inheritors",
+    )
+    mixins = models.ManyToManyField(
+        "ApexConfig", related_name="mixin_sources", blank=True
+    )
+    own_config = models.JSONField(
+        default=get_default_apex_options, null=True, blank=True
+    )
 
     @property
     def config(self):
@@ -90,7 +101,7 @@ class ApexConfig(models.Model):
         if self.inherit:
             _config = always_merger.merge(_config, self.inherit.own_config)
         if self.mixins:
-            for mixin in self.mixins.order_by('name'):
+            for mixin in self.mixins.order_by("name"):
                 _config = always_merger.merge(_config, mixin.own_config)
         if self.own_config:
             _config = always_merger.merge(_config, self.own_config)
@@ -100,58 +111,47 @@ class ApexConfig(models.Model):
         return self.name
 
     class Meta:
-        ordering = ('name',)
+        ordering = ("name",)
 
 
 class ApexChart(models.Model):
-    related_name = 'charts'
+    related_name = "charts"
     name = models.CharField(max_length=50, unique=True)
     xaxis_label = models.CharField(max_length=50, null=True, blank=True)
     yaxis_label = models.CharField(max_length=50, null=True, blank=True)
     group = models.CharField(max_length=50, null=True, blank=True)
     sensors = ArrayField(models.CharField(max_length=50, blank=True), blank=True)
+    colors = ArrayField(ColorField(default="#000", blank=True), blank=True)
     switches = ArrayField(models.CharField(max_length=50, blank=True), blank=True)
-    own_config = models.ForeignKey(ApexConfig, on_delete=models.RESTRICT, related_name=related_name)
+    own_config = models.ForeignKey(
+        ApexConfig, on_delete=models.RESTRICT, related_name=related_name
+    )
 
     @property
     def config(self):
-        _config = {}
+        _config = {
+            "colors": self.colors,
+            "stroke": {"curve": ["smooth"] * len(self.sensors)},
+        }
         if self.own_config:
             _config = always_merger.merge(_config, self.own_config.config)
-        _config = always_merger.merge(_config, {
-            'chart': {
-                'id': f"chart{self.pk}"
-            },
-            'title': {
-                'text': self.name
-            }
-        })
+        _config = always_merger.merge(
+            _config, {"chart": {"id": f"chart{self.pk}"}, "title": {"text": self.name}}
+        )
         if self.group:
-            _config = always_merger.merge(_config, {
-                'chart': {
-                    'group': self.group
-                }
-            })
+            _config = always_merger.merge(_config, {"chart": {"group": self.group}})
         if self.xaxis_label:
-            _config = always_merger.merge(_config, {
-                'xaxis': {
-                    'title': {
-                        'text': self.xaxis_label
-                    }
-                }
-            })
+            _config = always_merger.merge(
+                _config, {"xaxis": {"title": {"text": self.xaxis_label}}}
+            )
         if self.yaxis_label:
-            _config = always_merger.merge(_config, {
-                'yaxis': {
-                    'title': {
-                        'text': self.yaxis_label
-                    }
-                }
-            })
+            _config = always_merger.merge(
+                _config, {"yaxis": {"title": {"text": self.yaxis_label}}}
+            )
         return _config
 
     def __str__(self):
         return self.name
 
     class Meta:
-        ordering = ('id',)
+        ordering = ("id",)
