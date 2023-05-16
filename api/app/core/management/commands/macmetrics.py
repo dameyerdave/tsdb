@@ -33,7 +33,7 @@ class Command(BaseCommand):
                     if 'Fan' in line:
                         value = float(re.search(r'Fan: ([0-9\.]+) rpm', line).group(1))
                         SensorReading.add('FAN_RPM', value)
-                except Exception as ex:
+                except Exception:
                     log.warning(f"Cannot parce: {line}.")
                     continue
         except Exception as ex:

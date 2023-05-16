@@ -31,6 +31,9 @@ class TimescaleModel(models.Model):
 class Sensor(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class SensorReading(TimescaleModel):
     time = models.DateTimeField(default=timezone.now, primary_key=True)
@@ -41,6 +44,9 @@ class SensorReading(TimescaleModel):
     def add(cls, sensor: str, value: float):
         _sensor, created = Sensor.objects.get_or_create(name=sensor)
         cls.objects.create(sensor=_sensor, value=value)
+
+    def __str__(self):
+        return f"[{self.time}] {self.sensor.name}: {self.value}"
 
     class Meta:
         unique_together = ('time', 'sensor')
