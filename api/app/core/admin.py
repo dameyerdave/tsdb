@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ApexConfig, ApexChart, Sensor, SensorReading
+from .models import ApexConfig, ApexChart, Sensor, SensorReading, Switch, SwitchState
 from jsoneditor.admin import JSONFieldAdminMixin
 
 
@@ -20,4 +20,14 @@ class SensorAdmin(admin.ModelAdmin):
 
 @admin.register(SensorReading)
 class SensorReadingAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Switch)
+class SwitchAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(SwitchState)
+class SwitchStateAdmin(admin.ModelAdmin):
     pass

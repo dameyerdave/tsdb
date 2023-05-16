@@ -60,6 +60,9 @@ class SensorReading(TimescaleModel):
 class Switch(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class SwitchState(TimescaleModel):
     time = models.DateTimeField(default=timezone.now, primary_key=True)
@@ -123,6 +126,7 @@ class ApexChart(models.Model):
     sensors = ArrayField(models.CharField(max_length=50, blank=True), blank=True)
     colors = ArrayField(ColorField(default="#000", blank=True), blank=True)
     switches = ArrayField(models.CharField(max_length=50, blank=True), blank=True)
+    tickAmount = models.IntegerField(default=6, blank=True)
     own_config = models.ForeignKey(
         ApexConfig, on_delete=models.RESTRICT, related_name=related_name
     )
@@ -131,7 +135,10 @@ class ApexChart(models.Model):
     def config(self):
         _config = {
             "colors": self.colors,
-            "stroke": {"curve": ["smooth"] * len(self.sensors)},
+            "stroke": {
+                "curve": ["smooth"] * len(self.sensors),
+                "width": [1] * len(self.sensors),
+            },
         }
         if self.own_config:
             _config = always_merger.merge(_config, self.own_config.config)
@@ -142,11 +149,35 @@ class ApexChart(models.Model):
             _config = always_merger.merge(_config, {"chart": {"group": self.group}})
         if self.xaxis_label:
             _config = always_merger.merge(
-                _config, {"xaxis": {"title": {"text": self.xaxis_label}}}
+                _config,
+                {"xaxis": {"title": {"text": self.xaxis_label}}},
             )
         if self.yaxis_label:
             _config = always_merger.merge(
-                _config, {"yaxis": {"title": {"text": self.yaxis_label}}}
+                _config,
+                {
+                    "yaxis": [
+                        {
+                            "labels": {
+                                "style": {
+                                    "colors": [self.colors[idx]] * self.tickAmount
+                                }
+                            },
+                            "axisTicks": {
+                                "show": True,
+                                "color": self.colors[idx],
+                            },
+                            "axisBorder": {"show": True, "color": self.colors[idx]},
+                            "title": {
+                                "text": sensor,
+                                "style": {"color": self.colors[idx]},
+                            },
+                            "min": 3000 if idx == 1 else 0,
+                            "forceNiceScale": True,
+                        }
+                        for idx, sensor in enumerate(self.sensors)
+                    ]
+                },
             )
         return _config
 
