@@ -19,8 +19,6 @@ services:
   api:
     build:
       context: api
-      args:
-        ENABLE_JUPYTER: ${ENABLE_JUPYTER}
     hostname: api
     restart: unless-stopped
     entrypoint: sh -c '/app/entrypoint.sh'

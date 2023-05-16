@@ -292,7 +292,6 @@ dist
 
 # Additions
 .DS_Store
-.vscode
 !.env.TEMPLATE
 /data
 static/

@@ -9,10 +9,6 @@ python manage.py migrate
 python manage.py initadmin
 python manage.py db init
 
-if [ "$ENABLE_JUPYTER" == "True" ]; then
-  jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser --allow-root --config notebook/ipython_config.py &
-fi
-
 if [ "$DEV" == "True" ]; then
   python manage.py runserver 0.0.0.0:${PORT}
 else

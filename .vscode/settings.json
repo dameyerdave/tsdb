@@ -1,0 +1,27 @@
+{
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": ["source.fixAll.eslint"],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "cSpell.words": ["sensorreading", "switchstate"],
+  "python.testing.pytestArgs": ["api"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": false
+    }
+  },
+  "python.terminal.activateEnvironment": false,
+  "python.defaultInterpreterPath": "/Users/davmeyer/.local/share/virtualenvs/tsdb-bcg8Rvqk/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.lintOnSave": true,
+  "python.linting.pycodestyleEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "black"
+}
