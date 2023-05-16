@@ -1,20 +1,20 @@
-django==4.1.5
+django==4.2.1
 django_extensions==3.2.1
-django-cors-headers==3.13.0
-django-filter==22.1
+django-cors-headers==4.0.0
+django-filter==23.2
 django-jsoneditor-widget==1.3.2
 django-light==0.1.0.post3
 djangorestframework==3.14.0
-# drf-schema-adapter==3.0.0
-git+https://github.com/dameyerdave/drf-schema-adapter@filter_to_filterset#egg=drf-schema-adapter
+drf-schema-adapter==3.0.6
+# git+https://github.com/dameyerdave/drf-schema-adapter@filter_to_filterset#egg=drf-schema-adapter
 djangorestframework-csv==2.1.1
-markdown==3.4.1
+markdown==3.4.3
 friendlylog==1.0.2
 gunicorn==20.1.0
-uvicorn==0.20.0
-psycopg2==2.9.5
+uvicorn==0.22.0
+psycopg2==2.9.6
 pyyaml==6.0
-tqdm==4.64.1
+tqdm==4.65.0
 deepmerge==1.1.0
 
 
