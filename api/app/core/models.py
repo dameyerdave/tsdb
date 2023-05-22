@@ -46,7 +46,7 @@ class Feature(models.Model):
 
 
 class AnnotationDefinition(models.Model):
-    COLORS = {"I": "#0f0", "W": "#FFA%00", "E": "#f00"}
+    COLORS = {"I": "#0f0", "W": "#FFA500", "E": "#f00"}
     name = models.CharField(max_length=50, unique=True)
     level = models.CharField(
         max_length=1, choices=(("I", "INFO"), ("W", "WARN"), ("E", "ERROR"))
