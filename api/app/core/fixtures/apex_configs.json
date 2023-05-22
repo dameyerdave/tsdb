@@ -36,15 +36,6 @@
         "xaxis": {
           "type": "datetime"
         },
-        "yaxis": [
-          {
-            "title": {
-              "style": {
-                "color": "#00E396"
-              }
-            }
-          }
-        ],
         "legend": {
           "offsetX": -5,
           "offsetY": -20,

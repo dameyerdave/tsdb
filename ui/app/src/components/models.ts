@@ -5,7 +5,7 @@ export interface ChartConfig {
 
 export interface Chart {
     name: string
-    sensors: Array<string>
+    measurements: Array<string>
     switches: Array<string>
     config: ChartConfig
 }

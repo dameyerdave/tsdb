@@ -132,11 +132,12 @@ class ApexChart(models.Model):
     related_name = "charts"
     name = models.CharField(max_length=50, unique=True)
     xaxis_label = models.CharField(max_length=50, null=True, blank=True)
-    yaxis_label = models.CharField(max_length=50, null=True, blank=True)
+    yaxis_labels = ArrayField(
+        models.CharField(max_length=50, null=True, blank=True), blank=True
+    )
     group = models.CharField(max_length=50, null=True, blank=True)
-    sensors = ArrayField(models.CharField(max_length=50, blank=True), blank=True)
+    measurements = ArrayField(models.CharField(max_length=50, blank=True), blank=True)
     colors = ArrayField(ColorField(default="#000", blank=True), blank=True)
-    switches = ArrayField(models.CharField(max_length=50, blank=True), blank=True)
     tickAmount = models.IntegerField(default=6, blank=True)
     own_config = models.ForeignKey(
         ApexConfig, on_delete=models.RESTRICT, related_name=related_name
@@ -147,8 +148,8 @@ class ApexChart(models.Model):
         _config = {
             "colors": self.colors,
             "stroke": {
-                "curve": ["smooth"] * len(self.sensors),
-                "width": [1] * len(self.sensors),
+                "curve": ["smooth"] * len(self.measurements),
+                "width": [1] * len(self.measurements),
             },
         }
         if self.own_config:
@@ -163,7 +164,7 @@ class ApexChart(models.Model):
                 _config,
                 {"xaxis": {"title": {"text": self.xaxis_label}}},
             )
-        if self.yaxis_label:
+        if self.yaxis_labels:
             _config = always_merger.merge(
                 _config,
                 {
@@ -180,13 +181,12 @@ class ApexChart(models.Model):
                             },
                             "axisBorder": {"show": True, "color": self.colors[idx]},
                             "title": {
-                                "text": sensor,
+                                "text": measurement,
                                 "style": {"color": self.colors[idx]},
                             },
-                            "min": 3000 if idx == 1 else 0,
                             "forceNiceScale": True,
                         }
-                        for idx, sensor in enumerate(self.sensors)
+                        for idx, measurement in enumerate(self.measurements)
                     ]
                 },
             )

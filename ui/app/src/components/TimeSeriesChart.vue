@@ -34,7 +34,7 @@ onMounted(async () => {
         const respSeries = await api.get('/api/measurement/apex/', {
             params: {
                 entity: 'MAC',
-                feature: props.chart.sensors.join(','),
+                feature: props.chart.measurements.join(','),
                 last: props.last,
                 resolution: props.resolution,
             },
