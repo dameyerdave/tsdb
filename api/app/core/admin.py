@@ -1,5 +1,13 @@
 from django.contrib import admin
-from .models import ApexConfig, ApexChart, Measurement, Feature, Entity
+from .models import (
+    ApexConfig,
+    ApexChart,
+    Measurement,
+    Feature,
+    Entity,
+    Annotation,
+    AnnotationDefinition,
+)
 from jsoneditor.admin import JSONFieldAdminMixin
 
 
@@ -25,4 +33,16 @@ class FeatureAdmin(admin.ModelAdmin):
 
 @admin.register(Entity)
 class EntityAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Annotation)
+class AnnotationAdmin(admin.ModelAdmin):
+    list_display = ("entity", "definition")
+    search_fields = ("entity",)
+    list_filter = ("entity__name", "definition__name")
+
+
+@admin.register(AnnotationDefinition)
+class AnnotationDefinitionAdmin(admin.ModelAdmin):
     pass

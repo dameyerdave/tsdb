@@ -45,6 +45,21 @@ class Feature(models.Model):
         return self.name
 
 
+class AnnotationDefinition(models.Model):
+    COLORS = {"I": "#0f0", "W": "#FFA%00", "E": "#f00"}
+    name = models.CharField(max_length=50, unique=True)
+    level = models.CharField(
+        max_length=1, choices=(("I", "INFO"), ("W", "WARN"), ("E", "ERROR"))
+    )
+
+    @property
+    def color(self):
+        return self.COLORS[self.level]
+
+    def __str__(self):
+        return self.name
+
+
 class Measurement(TimescaleModel):
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
     feature = models.ForeignKey(Feature, on_delete=models.CASCADE)
@@ -68,11 +83,12 @@ class Measurement(TimescaleModel):
         ]
 
 
-# class Annotations(models.Model):
-#     name = models.CharField(max_length=50, unique=True)
+class Annotation(TimescaleModel):
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
+    definition = models.ForeignKey(AnnotationDefinition, on_delete=models.CASCADE)
 
-#     def __str__(self):
-#         return self.name
+    def __str__(self):
+        return f"{self.definition.name}"
 
 
 # class SwitchState(TimescaleModel):
@@ -162,7 +178,15 @@ class ApexChart(models.Model):
         if self.xaxis_label:
             _config = always_merger.merge(
                 _config,
-                {"xaxis": {"title": {"text": self.xaxis_label}}},
+                {
+                    "xaxis": {
+                        "title": {
+                            "text": self.xaxis_label,
+                            # "offsetX": -800,
+                            "offsetY": 65,
+                        }
+                    }
+                },
             )
         if self.yaxis_labels:
             _config = always_merger.merge(

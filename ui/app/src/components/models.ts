@@ -1,6 +1,5 @@
 export interface ChartConfig {
-    name: string
-    config: object
+    annotations: object
 }
 
 export interface Chart {

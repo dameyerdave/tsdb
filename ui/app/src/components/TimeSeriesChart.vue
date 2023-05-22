@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, onMounted, defineProps, PropType} from 'vue'
+import {ref, onMounted, defineProps, PropType, computed} from 'vue'
 import {api} from 'src/boot/axios'
 // import {merge} from 'src/utils'
 import {Chart} from 'src/components/models'
@@ -18,7 +18,7 @@ const props = defineProps({
     },
     last: {
         type: String,
-        default: '1h',
+        default: '5h',
     },
     resolution: {
         type: String,
@@ -28,6 +28,15 @@ const props = defineProps({
 
 const loading = ref<boolean>(true)
 const series = ref([])
+const annotations = ref([])
+
+const options = computed(() => {
+    const opt = props.chart.config
+    opt.annotations = {
+        xaxis: annotations,
+    }
+    return opt
+})
 
 onMounted(async () => {
     try {
@@ -41,7 +50,8 @@ onMounted(async () => {
         })
         console.debug('chart', props.chart)
         console.debug('data', respSeries.data)
-        series.value = respSeries.data
+        series.value = respSeries.data.series
+        annotations.value = respSeries.data.annotations
         // const respSwitches = await api.get('/api/switch/apex/', {
         //     params: {
         //         switch: props.chart.switches.join(','),
@@ -79,7 +89,7 @@ onMounted(async () => {
         v-else
         class="full-width"
         :height="props.height"
-        :options="props.chart.config"
+        :options="options"
         :series="series"></apexchart>
 </template>
 

@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
-from .models import ApexConfig, ApexChart, Measurement
+from .models import ApexConfig, ApexChart, Measurement, Annotation
 from .serializers import (
     MeasurementSerializer,
     ApexConfigSerializer,
@@ -98,8 +98,30 @@ class MeasurementViewSet(viewsets.ModelViewSet):
                 ret[dp.feature]["data"].append(
                     {"x": milliseconds(dp.timestamp), "y": dp.avg}
                 )
+        annotations = Annotation.objects.filter(entity__name=entity)
 
-        return Response([r for r in ret.values()], status.HTTP_200_OK)
+        return Response(
+            {
+                "series": [ret[f] for f in feature.split(",")],
+                "annotations": [
+                    {
+                        "x": milliseconds(a.time),
+                        "strokeDashArray": 0,
+                        "borderColor": a.definition.color,
+                        "label": {
+                            "borderColor": a.definition.color,
+                            "style": {
+                                "color": "#000",
+                                "background": a.definition.color,
+                            },
+                            "text": a.definition.name,
+                        },
+                    }
+                    for a in annotations
+                ],
+            },
+            status.HTTP_200_OK,
+        )
 
 
 # class SwitchStateViewSet(viewsets.ModelViewSet):
