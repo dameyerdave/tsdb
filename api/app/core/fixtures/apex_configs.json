@@ -36,6 +36,15 @@
         "xaxis": {
           "type": "datetime"
         },
+        "yaxis": [
+          {
+            "title": {
+              "style": {
+                "color": "#00E396"
+              }
+            }
+          }
+        ],
         "legend": {
           "offsetX": -5,
           "offsetY": -20,
@@ -72,15 +81,8 @@
       "inherit": 1,
       "own_config": {
         "title": {
-          "text": "Sensor"
-        },
-        "yaxis": [
-          {
-            "title": {
-              "text": "Temperature"
-            }
-          }
-        ]
+          "text": "Measurement"
+        }
       },
       "mixins": []
     }
