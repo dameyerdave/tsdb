@@ -1,9 +1,10 @@
 from django.db import models
-from django.utils import timezone
-from datetime import timedelta as td
 from django.contrib.postgres.fields import ArrayField
 from colorfield.fields import ColorField
 from deepmerge import always_merger
+from timescale.db.models.models import TimescaleModel
+from django.utils.timezone import now
+
 import json
 
 
@@ -17,69 +18,79 @@ def get_default_apex_options():
         return json.load(defaults_file)
 
 
-class TimescaleModel(models.Model):
-    def save(self, *args, **kwargs):
-        # We want to smear the timestamp if sensors are read at the same time
-        # we just add a µs to the time
-        while self.__class__.objects.filter(time=self.time).exists():
-            self.time += td(microseconds=1)
-        super().save(*args, **kwargs)
+# class TimescaleModel(models.Model):
+#     def save(self, *args, **kwargs):
+#         # We want to smear the timestamp if sensors are read at the same time
+#         # we just add a µs to the time
+#         while self.__class__.objects.filter(time=self.time).exists():
+#             self.time += td(microseconds=1)
+#         super().save(*args, **kwargs)
 
-    class Meta:
-        abstract = True
+#     class Meta:
+#         abstract = True
 
 
-class Sensor(models.Model):
+class Entity(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.name
 
 
-class SensorReading(TimescaleModel):
-    time = models.DateTimeField(default=timezone.now, primary_key=True)
-    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
+class Feature(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    unit = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
+class Measurement(TimescaleModel):
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
+    feature = models.ForeignKey(Feature, on_delete=models.CASCADE)
     value = models.FloatField()
 
     @classmethod
-    def add(cls, sensor: str, value: float):
-        _sensor, created = Sensor.objects.get_or_create(name=sensor)
-        cls.objects.create(sensor=_sensor, value=value)
+    def add(cls, entity: str, feature: str, value: float):
+        _entity, _ = Entity.objects.get_or_create(name=entity)
+        _feature, _ = Feature.objects.get_or_create(name=feature)
+        cls.objects.create(time=now(), entity=_entity, feature=_feature, value=value)
 
     def __str__(self):
-        return f"[{self.time}] {self.sensor.name}: {self.value}"
+        return f"[{self.time}] {self.entity.name} | {self.feature.name}: {self.value}"
 
     class Meta:
-        unique_together = ("time", "sensor")
-        index_together = [
-            ("time", "sensor"),
-        ]
         ordering = ("time",)
-
-
-class Switch(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
-class SwitchState(TimescaleModel):
-    time = models.DateTimeField(default=timezone.now, primary_key=True)
-    switch = models.ForeignKey(Switch, on_delete=models.CASCADE)
-    on = models.BooleanField(default=False)
-
-    @classmethod
-    def add(cls, switch: str, on: bool):
-        _switch, created = Switch.objects.get_or_create(name=switch)
-        cls.objects.create(switch=_switch, on=on)
-
-    class Meta:
-        unique_together = ("time", "switch")
+        unique_together = ("time", "entity", "feature")
         index_together = [
-            ("time", "switch"),
+            ("time", "entity", "feature"),
+            ("entity", "feature"),
         ]
-        ordering = ("time",)
+
+
+# class Annotations(models.Model):
+#     name = models.CharField(max_length=50, unique=True)
+
+#     def __str__(self):
+#         return self.name
+
+
+# class SwitchState(TimescaleModel):
+#     time = models.DateTimeField(default=timezone.now, primary_key=True)
+#     switch = models.ForeignKey(Switch, on_delete=models.CASCADE)
+#     on = models.BooleanField(default=False)
+
+#     @classmethod
+#     def add(cls, switch: str, on: bool):
+#         _switch, created = Switch.objects.get_or_create(name=switch)
+#         cls.objects.create(switch=_switch, on=on)
+
+#     class Meta:
+#         unique_together = ("time", "switch")
+#         index_together = [
+#             ("time", "switch"),
+#         ]
+#         ordering = ("time",)
 
 
 class ApexConfig(models.Model):

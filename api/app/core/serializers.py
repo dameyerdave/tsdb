@@ -1,17 +1,23 @@
 from rest_framework import serializers
-from .models import SensorReading, SwitchState, ApexConfig, ApexChart
+from .models import Measurement, Feature, Entity, ApexConfig, ApexChart
 
 
-class SensorReadingSerializer(serializers.ModelSerializer):
+class MeasurementSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SensorReading
-        fields = '__all__'
+        model = Measurement
+        fields = "__all__"
 
 
-class SwitchStateSerializer(serializers.ModelSerializer):
+class FeatureSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SwitchState
-        fields = '__all__'
+        model = Feature
+        fields = "__all__"
+
+
+class EntitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Entity
+        fields = "__all__"
 
 
 class ApexConfigSerializer(serializers.ModelSerializer):
@@ -19,7 +25,7 @@ class ApexConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApexConfig
-        fields = ('name', 'config')
+        fields = ("name", "config")
 
 
 class ApexChartSerializer(serializers.ModelSerializer):
@@ -27,4 +33,4 @@ class ApexChartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApexChart
-        fields = '__all__'
+        fields = "__all__"

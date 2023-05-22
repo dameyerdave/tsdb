@@ -2,14 +2,14 @@ from django.core.management.base import BaseCommand
 from friendlylog import colored_logger as log
 from sys import stdin
 import traceback
-from core.models import SensorReading
+from core.models import Measurement
 import re
 
 
 class Command(BaseCommand):
     """
     Adds some mac metrics to the database.
-    Please run: 
+    Please run:
     sudo powermetrics -s smc | docker exec -i tsdb-api-1 ./manage.py macmetrics
     """
 
@@ -24,17 +24,26 @@ class Command(BaseCommand):
         try:
             for line in stdin:
                 try:
-                    if 'CPU die temperature' in line:
-                        value = float(re.search(r'CPU die temperature: ([-0-9\.]+) C', line).group(1))
-                        SensorReading.add('CPU_TEMP', value)
-                    if 'GPU die temperature' in line:
-                        value = float(re.search(r'GPU die temperature: ([-0-9\.]+) C', line).group(1))
-                        SensorReading.add('GPU_TEMP', value)
-                    if 'Fan' in line:
-                        value = float(re.search(r'Fan: ([0-9\.]+) rpm', line).group(1))
-                        SensorReading.add('FAN_RPM', value)
+                    if "CPU die temperature" in line:
+                        value = float(
+                            re.search(
+                                r"CPU die temperature: ([-0-9\.]+) C", line
+                            ).group(1)
+                        )
+                        Measurement.add("MAC", "CPU_TEMP", value)
+                    if "GPU die temperature" in line:
+                        value = float(
+                            re.search(
+                                r"GPU die temperature: ([-0-9\.]+) C", line
+                            ).group(1)
+                        )
+                        Measurement.add("MAC", "GPU_TEMP", value)
+                    if "Fan" in line:
+                        value = float(re.search(r"Fan: ([0-9\.]+) rpm", line).group(1))
+                        Measurement.add("MAC", "FAN_RPM", value)
                 except Exception:
                     log.warning(f"Cannot parce: {line}.")
+                    traceback.print_exc()
                     continue
         except Exception as ex:
             log.error(ex)

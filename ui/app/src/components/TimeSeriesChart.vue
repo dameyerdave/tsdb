@@ -31,13 +31,16 @@ const series = ref([])
 
 onMounted(async () => {
     try {
-        const respSeries = await api.get('/api/sensor/apex/', {
+        const respSeries = await api.get('/api/measurement/apex/', {
             params: {
-                sensor: props.chart.sensors.join(','),
+                entity: 'MAC',
+                feature: props.chart.sensors.join(','),
                 last: props.last,
                 resolution: props.resolution,
             },
         })
+        console.debug('chart', props.chart)
+        console.debug('data', respSeries.data)
         series.value = respSeries.data
         // const respSwitches = await api.get('/api/switch/apex/', {
         //     params: {

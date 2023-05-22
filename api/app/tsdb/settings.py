@@ -90,6 +90,7 @@ WSGI_APPLICATION = "tsdb.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
+        # "ENGINE": "timescale.db.backends.postgresql",
         "HOST": environ.get("POSTGRES_HOST"),
         "PORT": environ.get("POSTGRES_PORT"),
         "NAME": environ.get("POSTGRES_DB"),
@@ -97,6 +98,8 @@ DATABASES = {
         "PASSWORD": environ.get("POSTGRES_PASSWORD"),
     }
 }
+
+TIMESCALE_DB_BACKEND_BASE = "django.contrib.gis.db.backends.postgis"
 
 
 # Password validation

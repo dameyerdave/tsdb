@@ -7,7 +7,7 @@ django-light==0.1.0.post3
 django-colorfield==0.8.0
 djangorestframework==3.14.0
 drf-schema-adapter==3.0.6
-# git+https://github.com/dameyerdave/drf-schema-adapter@filter_to_filterset#egg=drf-schema-adapter
+django-timescaledb==0.2.13
 djangorestframework-csv==2.1.1
 markdown==3.4.3
 friendlylog==1.0.2
